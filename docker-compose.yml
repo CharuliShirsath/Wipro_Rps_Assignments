@@ -1,53 +1,70 @@
 version: '3.9'
-
 services:
-  eureka-service:
-    container_name: els-container
-    #build: # "context" and "dockerfile" fields have to be under "build"
-      #context: ./
-      #dockerfile: ./eureka-service/Dockerfile
-    image: charuli/eureka-service
-    #image: asrdigi/eureka-service.jar
-    #build: ./eureka-service
+  producer:
+    container_name: producer_container
+    #image: asr_digi:producer-service
+    image: charuli/application.jar
+    #build: ./producer-service
     tty: true
     
+    #ports:
+      #- "8081:8081"
+    restart: always
+    depends_on:
+      - config-service
+      - gateway
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://els-service:8761/eureka 
+  
+  consumer:
+    #image: asrdigi:consumer-service
+    image: charuli/application.jar
+    #build: ./consumer-service
+    tty: true
+    container_name: consumer-container
+    ports:
+      - "8082:8082"
+    restart: always
+    depends_on:
+      - config-service
+      - gateway
+      - producer
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://els-service:8761/eureka 
+        
+  gateway:
+    #image: asrdigi:gateway-service
+    image: charuli/application.jar
+    #build: ./gateway-service
+    tty: true
+    container_name: gateway-container
+    ports:
+      - "8085:8085"
+    restart: always
+    depends_on:
+      - config-service
+      - els-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://els-service:8761/eureka 
+
+
+  els-service:
+    #image: asrdigi:eureka-service
+    image: charuli/application.jar
+    #build: ./eureka-service
+    tty: true
+    container_name: eureka-container
     ports:
       - "8761:8761"
-    
     restart: always
     
-  #new service (java_app)
-  user-service:
-    container_name: user-service-container
-    #build the docker image, same as docker build
-    image: charuli/user-service
-    #build: ./user-service
+  config-service:
+    #image: asrdigi:eureka-service
+    image: charuli/application.jar
+    #build: ./config-service
+    tty: true
+    container_name: config-container
     ports:
-      - 6969:6969
-    environment:
-      - eureka.client.service-url.defaultZone=http://eureka-service:8761/eureka	
-      #- JAVA_OPTS=
-        #-DEUREKA_SERVER=http://eureka-service:8761/eureka
-      - DATABASE_URL=jdbc:postgresql://postgres-service:5432/postgres
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=postgres
-    depends_on:
-      - postgres-service
-      - eureka-service
-
-  #old service (postgres)
-  postgres-service:
-    container_name: postgres-container
-    image: postgres:12
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata: {}
+      - "8888:8888"
+    restart: always
 
