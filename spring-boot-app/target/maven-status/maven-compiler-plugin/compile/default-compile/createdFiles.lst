@@ -1,0 +1,9 @@
+com/wipro0/dao/UserDao.class
+com/wipro0/dao/UserDaoImp.class
+com/wipro0/controller/UserController.class
+com/wipro/aspect/UserAspect.class
+com/wipro0/model/User.class
+com/wipro0/SpringBootAppApplication.class
+com/wipro0/service/UserService.class
+com/wipro0/service/UserServiceImpl.class
+com/wipro0/controller/HelloController.class

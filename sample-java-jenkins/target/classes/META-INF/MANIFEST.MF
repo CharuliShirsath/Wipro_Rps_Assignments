@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Built-By: rps
+Build-Jdk: 17.0.11
+Main-Class: com.wipro.app.App
+Created-By: Maven Integration for Eclipse
+
